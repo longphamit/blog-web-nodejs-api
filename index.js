@@ -1,11 +1,42 @@
 import express from "express"
-import clientRouter from "./router/client"
 import ejs from "ejs"
+import mongoose from "mongoose"
+import {router} from "./src/api/config/router"
+import logger from "morgan"
 const app=express();
+const port=process.env.PORT
+const host=process.env.HOST_DATABASE
+
+app.use(express.json());
+app.use(express.urlencoded())
+app.use(logger('combined'));
+app.use('/api',router)
 app.use(express.static("public"))
+app.use((req,res,next)=>{
+    const err= new Error('Not found')
+    err.message="invalid router"
+    err.status=404;
+    next(err)
+})
+app.use((err,req,res,next)=>{
+    res.status(err.status || 500)
+    return res.json({
+        error:{
+            message:err.message
+        }
+    })
+})
+
+
 app.set('view engine','ejs')
+
+
+console.log("host database")
+console.log(host)
+// connect database mongo
+mongoose.connect(host)
 // set rouer
-clientRouter(app)
-app.listen(4000,()=>{
-    console.log("app listening on port 4000")
+
+app.listen(port,()=>{
+    console.log("app listening on port "+port)
 })
