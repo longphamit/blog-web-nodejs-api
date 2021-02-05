@@ -3,6 +3,7 @@ import ejs from "ejs"
 import mongoose from "mongoose"
 import {router} from "./src/api/config/router"
 import logger from "morgan"
+import HttpStatusCode from "http-status-codes"
 const app=express();
 const port=process.env.PORT
 const host=process.env.HOST_DATABASE
@@ -15,11 +16,11 @@ app.use(express.static("public"))
 app.use((req,res,next)=>{
     const err= new Error('Not found')
     err.message="invalid router"
-    err.status=404;
+    err.status=HttpStatusCode.NOT_FOUND;
     next(err)
 })
 app.use((err,req,res,next)=>{
-    res.status(err.status || 500)
+    res.status(err.status || HttpStatusCode.INTERNAL_SERVER_ERROR)
     return res.json({
         error:{
             message:err.message
