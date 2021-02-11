@@ -1,12 +1,13 @@
 import express from "express"
 import ejs from "ejs"
 import mongoose from "mongoose"
-import {router} from "./src/api/config/router"
+import {accountRouter} from "./src/api/routers/account.router"
 import logger from "morgan"
 import HttpStatusCode from "http-status-codes"
 import cors from "cors"
 import swaggerUI from "swagger-ui-express"
 import swaggerDocument from "./src/api/config/swagger.json"
+import {userRouter} from "./src/api/routers/user.router"
 const app=express();
 const port=process.env.PORT
 const host=process.env.HOST_DATABASE
@@ -14,7 +15,8 @@ app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded())
 app.use(logger('combined'));
-app.use('/api',router)
+app.use('/api/user/',userRouter)
+app.use('/api/admin/account',accountRouter)
 app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerDocument,{
     explorer:true
 }))
